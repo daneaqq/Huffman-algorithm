@@ -70,3 +70,29 @@ def make_codes(node, cur_code, codes):
 
     make_codes(node.left, cur_code + "0", codes)
     make_codes(node.right, cur_code + "1", codes)
+
+
+# сохраняет дерево
+def save_tree(node, f):
+    if node.sym is not None:
+        f.write(b'L')
+        f.write(node.sym)
+    else:
+        f.write(b'I')
+        save_tree(node.left, f)
+        save_tree(node.right, f)
+
+
+# грузит дерево
+def load_tree(f):
+    type_byte = f.read(1)
+    if not type_byte:
+        return None
+
+    if type_byte == b'L':
+        sym = f.read(1)
+        return node(0, sym)
+    else:
+        left = load_tree(f)
+        right = load_tree(f)
+        return node(0, None, left, right)
