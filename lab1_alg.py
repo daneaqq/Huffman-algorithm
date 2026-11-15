@@ -96,3 +96,51 @@ def load_tree(f):
         left = load_tree(f)
         right = load_tree(f)
         return node(0, None, left, right)
+
+
+# кодирует файл
+def encode_file(in_name, out_name):
+    print("encoding", in_name)
+
+    freqs = get_freqs(in_name)
+    if not freqs:
+        f = open(out_name, 'wb')
+        f.close()
+        print("empty file")
+        return
+
+    root = build_tree(freqs)
+
+    codes = {}
+    make_codes(root, "", codes)
+
+    bit_str = ""
+    with open(in_name, 'rb') as inf:
+        data = inf.read()
+
+    for b in data:
+        bit_str += codes[bytes([b])]
+
+    pad_len = 0
+    if len(bit_str) % 8 != 0:
+        pad_len = 8 - (len(bit_str) % 8)
+        bit_str += "0" * pad_len
+
+    with open(out_name, 'wb') as outf:
+        save_tree(root, outf)
+        outf.write(b'|')
+        outf.write(bytes([pad_len]))
+
+        for i in range(0, len(bit_str), 8):
+            byte_str = bit_str[i:i + 8]
+            byte_val = int(byte_str, 2)
+            outf.write(bytes([byte_val]))
+
+    in_size = os.path.getsize(in_name)
+    out_size = os.path.getsize(out_name)
+    print(f"size {in_size} -> {out_size} bytes")
+    if in_size > 0:
+        ratio = ((in_size - out_size) / in_size) * 100
+        print(f"ratio {ratio:.1f}%")
+
+    print("done")
