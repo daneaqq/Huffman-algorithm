@@ -56,3 +56,17 @@ def build_tree(freq_dict):
         nodes.insert(pos, new_node)
 
     return nodes[0]
+
+
+
+# рекурсивно коды хаффмана
+def make_codes(node, cur_code, codes):
+    if node.sym is not None:
+        if cur_code == "":
+            codes[node.sym] = "0"
+        else:
+            codes[node.sym] = cur_code
+        return
+
+    make_codes(node.left, cur_code + "0", codes)
+    make_codes(node.right, cur_code + "1", codes)
