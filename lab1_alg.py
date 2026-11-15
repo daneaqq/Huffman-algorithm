@@ -144,3 +144,58 @@ def encode_file(in_name, out_name):
         print(f"ratio {ratio:.1f}%")
 
     print("done")
+
+
+
+# декодирует файлик
+def decode_file(in_name, out_name):
+    print("decoding", in_name)
+
+    with open(in_name, 'rb') as inf:
+        root = load_tree(inf)
+        if root is None:
+            open(out_name, 'wb').close()
+            print("empty file")
+            return
+
+        while True:
+            byte = inf.read(1)
+            if not byte or byte == b'|':
+                break
+
+        pad_len = inf.read(1)
+        if not pad_len:
+            open(out_name, 'wb').close()
+            return
+        pad_len = pad_len[0]
+
+        encoded_bytes = inf.read()
+        if not encoded_bytes:
+            open(out_name, 'wb').close()
+            return
+
+    bit_str = ""
+    for byte in encoded_bytes:
+        bit_str += f"{byte:08b}"
+
+    if pad_len > 0:
+        bit_str = bit_str[:-pad_len]
+
+    result_bytes = []
+    cur_node = root
+
+    for bit in bit_str:
+        if bit == '0':
+            cur_node = cur_node.left
+        else:
+            cur_node = cur_node.right
+
+        if cur_node.sym is not None:
+            result_bytes.append(cur_node.sym)
+            cur_node = root
+
+    with open(out_name, 'wb') as outf:
+        for byte in result_bytes:
+            outf.write(byte)
+
+    print("done")
