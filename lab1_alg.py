@@ -182,17 +182,21 @@ def decode_file(in_name, out_name):
         bit_str = bit_str[:-pad_len]
 
     result_bytes = []
-    cur_node = root
 
-    for bit in bit_str:
-        if bit == '0':
-            cur_node = cur_node.left
-        else:
-            cur_node = cur_node.right
+    if root.sym is not None:
+        # один уникальный байт: каждый бит соответствует одному символу
+        result_bytes = [root.sym] * len(bit_str)
+    else:
+        cur_node = root
+        for bit in bit_str:
+            if bit == '0':
+                cur_node = cur_node.left
+            else:
+                cur_node = cur_node.right
 
-        if cur_node.sym is not None:
-            result_bytes.append(cur_node.sym)
-            cur_node = root
+            if cur_node.sym is not None:
+                result_bytes.append(cur_node.sym)
+                cur_node = root
 
     with open(out_name, 'wb') as outf:
         for byte in result_bytes:
