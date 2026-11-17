@@ -199,3 +199,33 @@ def decode_file(in_name, out_name):
             outf.write(byte)
 
     print("done")
+
+
+
+def main():
+    if len(sys.argv) < 4:
+        print("python huffman.py encode input.txt file.huf")
+        print("python huffman.py decode file.huf input.txt")
+        return 1
+
+    mode = sys.argv[1]
+    in_file = sys.argv[2]
+    out_file = sys.argv[3]
+
+    if not os.path.exists(in_file):
+        print("error")
+        return 1
+
+    if mode == "encode":
+        encode_file(in_file, out_file)
+    elif mode == "decode":
+        decode_file(in_file, out_file)
+    else:
+        print("error")
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
